@@ -1,0 +1,27 @@
+{
+  "id": ".",
+  "name": "Gongonia Network",
+  "short_name": "GNG",
+  "description": "Gongonia Network GNG: aplicación PWA de prueba con cuentas Supabase, minería simbólica local y música ambiental original.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050b09",
+  "theme_color": "#07120f",
+  "icons": [
+    {
+      "src": "icons/gng-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/gng-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
