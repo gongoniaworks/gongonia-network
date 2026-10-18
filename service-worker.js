@@ -3,7 +3,7 @@
 const CACHE_NAME = 'gng-pwa-v3-4-background-music';
 const APP_SHELL = [
   './', './index.html', './styles.css', './app.js', './supabase-config.js', './manifest.webmanifest',
-  './assets/gng-coin.webp', './assets/gng-mining-logo.png', './assets/gng-ambient-loop.mp3', './icons/gng-192.png', './icons/gng-512.png'
+  './gng-coin.webp', './gng-mining-logo.png', './gng-ambient-loop.mp3', './gng-192.png', './gng-512.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
