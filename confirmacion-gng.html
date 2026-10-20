@@ -1,16 +1,29 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><title>Confirmar cuenta GNG</title></head>
-<body style="margin:0;padding:20px;background:#050805;text-align:center;font-family:Arial,sans-serif;">
-  <a href="{{ .ConfirmationURL }}" style="display:block;text-decoration:none;border:0;">
-    <img src="https://raw.githubusercontent.com/gongoniaworks/gongonia-network/main/confirmacion-gng.png"
-      alt="Bienvenido a Gongonia Network. Toca aquí para confirmar tu cuenta GNG."
-      width="600" style="display:block;width:100%;max-width:600px;height:auto;margin:0 auto;border:0;">
-  </a>
-  <p style="font-size:13px;line-height:1.6;color:#d9d0b9;margin:20px auto;">
-    Si la imagen no se muestra, confirma tu cuenta mediante este enlace:<br>
-    <a href="{{ .ConfirmationURL }}" style="color:#e5b65c;">Confirmar mi cuenta GNG</a>
-  </p>
-  <p style="font-size:11px;color:#a8a18e;">Si no solicitaste crear esta cuenta, puedes ignorar este mensaje.</p>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Confirma tu cuenta GNG</title></head>
+<body style="margin:0;padding:0;background:#050805;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#050805;">
+    <tr><td align="center" style="padding:20px 10px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;border:1px solid #b88532;border-radius:14px;background:#07110b;">
+        <tr><td align="center" style="padding:30px 22px 12px;">
+          <a href="{{ .ConfirmationURL }}" style="display:block;color:#e8bd67;text-decoration:none;">
+            <img src="https://raw.githubusercontent.com/gongoniaworks/gongonia-network/main/gng-512.png" width="150" alt="Logo de Gongonia" style="display:block;width:150px;max-width:45%;height:auto;margin:0 auto 18px;border:0;">
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:32px;line-height:1.2;letter-spacing:3px;color:#e7b65e;">GONGONIA NETWORK</div>
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.5;color:#ead9b8;margin-top:8px;">Un proyecto de Gongonia Works</div>
+            <div style="height:1px;background:#b88532;margin:22px auto;width:82%;"></div>
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.2;font-weight:bold;color:#e7b65e;margin:20px 0;">¡Bienvenido a Gongonia!</div>
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.7;color:#e3d8c3;margin:0 auto;max-width:500px;">Has dado el primer paso para formar parte de Gongonia Network. Antes de comenzar tu aventura, necesitamos verificar que esta dirección de correo te pertenece.</div>
+            <div style="display:inline-block;background:#d9a345;border:2px solid #f1d58a;border-radius:8px;padding:17px 24px;margin:28px auto 18px;color:#171006;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;letter-spacing:.5px;">CONFIRMAR MI CUENTA GNG</div>
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;line-height:1.6;color:#b9b09b;margin:8px auto 16px;">Toca esta tarjeta para confirmar tu cuenta.</div>
+          </a>
+        </td></tr>
+        <tr><td align="center" style="padding:18px 20px 25px;border-top:1px solid #6f522a;">
+          <p style="font-family:Arial,sans-serif;font-size:12px;line-height:1.6;color:#b9b09b;margin:0 0 12px;">Si no solicitaste crear esta cuenta, puedes ignorar este mensaje.</p>
+          <p style="font-family:Arial,sans-serif;font-size:12px;line-height:1.6;color:#b9b09b;margin:0;">Gongonia Network · Gongonia Works</p>
+          <p style="font-family:Arial,sans-serif;font-size:12px;line-height:1.6;margin:12px 0 0;"><a href="{{ .ConfirmationURL }}" style="color:#e7b65e;">Si no puedes tocar la tarjeta, confirma aquí</a></p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>
