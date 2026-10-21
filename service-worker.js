@@ -1,6 +1,6 @@
 
 'use strict';
-const CACHE_NAME = 'gng-pwa-v3-5-vardamar-lore';
+const CACHE_NAME = 'gng-pwa-v3-6-account-recovery';
 const APP_SHELL = [
   './', './index.html', './styles.css', './app.js', './supabase-config.js', './manifest.webmanifest',
   './gng-coin.webp', './gng-mining-logo.png', './gng-ambient-loop.mp3', './gng-192.png', './gng-512.png'
