@@ -314,6 +314,26 @@
             <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required>
             <button class="primary-action" id="loginSubmit" type="submit">Iniciar sesión</button>
           </form>
+          <button id="forgotPasswordButton" class="text-action" type="button">¿Olvidaste tu contraseña?</button>
+        </div>
+        <div id="passwordRecoveryPanel" class="auth-panel" hidden>
+          <form id="passwordRecoveryForm" novalidate>
+            <p class="subtle">Escribe tu correo y te enviaremos un enlace para recuperar el acceso.</p>
+            <label class="field-label" for="recoveryEmail">Correo electrónico</label>
+            <input id="recoveryEmail" name="email" type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" required>
+            <button class="primary-action" id="recoverySubmit" type="submit">Enviar enlace</button>
+            <button id="backToLoginButton" class="text-action" type="button">Volver a iniciar sesión</button>
+          </form>
+        </div>
+        <div id="passwordResetPanel" class="auth-panel" hidden>
+          <form id="passwordResetForm" novalidate>
+            <p class="subtle">Elige una contraseña nueva para tu cuenta GNG.</p>
+            <label class="field-label" for="resetPassword">Nueva contraseña</label>
+            <input id="resetPassword" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="Mínimo 8 caracteres" required>
+            <label class="field-label" for="resetPasswordConfirm">Repite la contraseña</label>
+            <input id="resetPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repite la contraseña" required>
+            <button class="primary-action" id="resetPasswordSubmit" type="submit">Guardar contraseña nueva</button>
+          </form>
         </div>
         <div id="authMessage" class="auth-message" role="status" aria-live="polite" hidden></div>
         <div id="configNotice" class="config-notice" role="note">
@@ -402,6 +422,25 @@
           <div><dt>Cuenta creada</dt><dd id="profileCreatedAt">—</dd></div>
         </dl>
         <p id="profileWarning" class="profile-warning" hidden></p>
+        <div class="profile-edit-form">
+          <h4>Editar nombre de usuario</h4>
+          <form id="profileEditForm" novalidate>
+            <label class="field-label" for="editUsername">Nombre de usuario</label>
+            <input id="editUsername" name="username" type="text" minlength="2" maxlength="30" autocomplete="username" required>
+            <button id="saveProfileButton" class="primary-action" type="submit">Guardar nombre</button>
+          </form>
+        </div>
+        <div class="profile-edit-form">
+          <h4>Cambiar contraseña</h4>
+          <form id="changePasswordForm" novalidate>
+            <label class="field-label" for="newPassword">Nueva contraseña</label>
+            <input id="newPassword" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="Mínimo 8 caracteres" required>
+            <label class="field-label" for="newPasswordConfirm">Repite la nueva contraseña</label>
+            <input id="newPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repite la contraseña" required>
+            <button id="changePasswordButton" class="primary-action" type="submit">Actualizar contraseña</button>
+          </form>
+        </div>
+        <p id="accountSettingsMessage" class="auth-message" role="status" aria-live="polite" hidden></p>
         <button id="logoutButton" class="secondary-action" type="button">Cerrar sesión</button>
       </section>
       <div class="settings-list">
