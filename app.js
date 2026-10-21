@@ -51,6 +51,19 @@
     loginForm: document.getElementById('loginForm'),
     signupSubmit: document.getElementById('signupSubmit'),
     loginSubmit: document.getElementById('loginSubmit'),
+    forgotPasswordButton: document.getElementById('forgotPasswordButton'),
+    passwordRecoveryPanel: document.getElementById('passwordRecoveryPanel'),
+    passwordRecoveryForm: document.getElementById('passwordRecoveryForm'),
+    recoverySubmit: document.getElementById('recoverySubmit'),
+    backToLoginButton: document.getElementById('backToLoginButton'),
+    passwordResetPanel: document.getElementById('passwordResetPanel'),
+    passwordResetForm: document.getElementById('passwordResetForm'),
+    resetPasswordSubmit: document.getElementById('resetPasswordSubmit'),
+    profileEditForm: document.getElementById('profileEditForm'),
+    saveProfileButton: document.getElementById('saveProfileButton'),
+    changePasswordForm: document.getElementById('changePasswordForm'),
+    changePasswordButton: document.getElementById('changePasswordButton'),
+    accountSettingsMessage: document.getElementById('accountSettingsMessage'),
     authMessage: document.getElementById('authMessage'),
     configNotice: document.getElementById('configNotice'),
     logoutButton: document.getElementById('logoutButton'),
@@ -172,6 +185,8 @@
     const signup = mode === 'signup';
     el.signupPanel.hidden = !signup;
     el.loginPanel.hidden = signup;
+    el.passwordRecoveryPanel.hidden = true;
+    el.passwordResetPanel.hidden = true;
     el.tabSignup.classList.toggle('is-current', signup);
     el.tabLogin.classList.toggle('is-current', !signup);
     el.tabSignup.setAttribute('aria-selected', String(signup));
@@ -312,6 +327,7 @@
     activateUserState(user);
     if (profile) {
       el.profileUsername.textContent = profile.username || user.user_metadata?.username || '—';
+      document.getElementById('editUsername').value = profile.username || user.user_metadata?.username || '';
       el.profileCountry.textContent = profile.country || user.user_metadata?.country || '—';
       el.profileCreatedAt.textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString('es-EC', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
       el.profileWarning.hidden = true;
@@ -359,6 +375,90 @@
     try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text }; }
     if (!response.ok) throw new Error(data.msg || data.message || data.error_description || data.error || `HTTP ${response.status}`);
     return data;
+  }
+
+  async function updateUsername(username) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/Profiles?id=eq.${encodeURIComponent(activeUser.id)}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_PUBLIC_KEY,
+        'Authorization': `Bearer ${activeSession.access_token}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ username })
+    });
+    const text = await response.text();
+    let data = {};
+    try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text }; }
+    if (!response.ok) throw new Error(data.message || data.details || data.hint || `No se pudo actualizar el nombre (HTTP ${response.status}).`);
+    // Refresh user metadata as a convenience; the authoritative profile remains public.Profiles.
+    const metaResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { 'apikey': SUPABASE_PUBLIC_KEY, 'Authorization': `Bearer ${activeSession.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: { ...(activeUser.user_metadata || {}), username } })
+    });
+    if (metaResponse.ok) activeUser = await metaResponse.json();
+    el.profileUsername.textContent = username;
+    document.getElementById('editUsername').value = username;
+  }
+
+  async function updatePassword(password, accessToken = activeSession?.access_token) {
+    if (!accessToken) throw new Error('La sesión de recuperación no es válida. Solicita un enlace nuevo.');
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { 'apikey': SUPABASE_PUBLIC_KEY, 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const text = await response.text();
+    let data = {};
+    try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text }; }
+    if (!response.ok) throw new Error(data.msg || data.message || data.error_description || `No se pudo cambiar la contraseña (HTTP ${response.status}).`);
+    return data;
+  }
+
+  async function requestPasswordRecovery(email) {
+    const redirect = `${window.location.origin}${window.location.pathname}`;
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_PUBLIC_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const text = await response.text();
+    let data = {};
+    try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text }; }
+    if (!response.ok) throw new Error(data.msg || data.message || data.error_description || `No se pudo enviar el correo (HTTP ${response.status}).`);
+    return data;
+  }
+
+  function showPasswordRecovery() {
+    switchAuthMode('login');
+    el.loginPanel.hidden = true;
+    el.passwordRecoveryPanel.hidden = false;
+    el.passwordResetPanel.hidden = true;
+    setAuthMessage('');
+    const email = document.getElementById('loginEmail').value.trim();
+    if (email) document.getElementById('recoveryEmail').value = email;
+  }
+
+  function handleRecoveryRedirect() {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const recoveryToken = hash.get('access_token');
+    const tokenType = hash.get('type');
+    if (tokenType === 'recovery' && recoveryToken) {
+      activeSession = { access_token: recoveryToken, token_type: 'bearer' };
+      el.authGate.hidden = false;
+      el.appContent.hidden = true;
+      el.signupPanel.hidden = true;
+      el.loginPanel.hidden = true;
+      el.passwordRecoveryPanel.hidden = true;
+      el.passwordResetPanel.hidden = false;
+      el.tabSignup.hidden = true;
+      el.tabLogin.hidden = true;
+      setAuthMessage('Enlace de recuperación válido. Elige tu nueva contraseña.', 'success');
+      return true;
+    }
+    return false;
   }
 
   async function loadProfileOrNull(user, session) {
@@ -522,6 +622,95 @@
   el.musicToggle.addEventListener('click', toggleBackgroundMusic);
   el.tabSignup.addEventListener('click', () => { switchAuthMode('signup'); setAuthMessage(''); });
   el.tabLogin.addEventListener('click', () => { switchAuthMode('login'); setAuthMessage(''); });
+  el.forgotPasswordButton.addEventListener('click', showPasswordRecovery);
+  el.backToLoginButton.addEventListener('click', () => { switchAuthMode('login'); setAuthMessage(''); });
+  el.passwordRecoveryForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!configIsReady()) return;
+    const field = document.getElementById('recoveryEmail');
+    const email = field.value.trim();
+    if (!field.checkValidity() || !email) return setAuthMessage('Escribe un correo electrónico válido.', 'error');
+    setBusy(el.recoverySubmit, true, 'Enviando…', 'Enviar enlace');
+    setAuthMessage('Solicitando el correo de recuperación…');
+    try {
+      await requestPasswordRecovery(email);
+      setAuthMessage('Si existe una cuenta con ese correo, recibirás un enlace para recuperar la contraseña. Revisa también Spam.', 'success');
+    } catch (error) {
+      setAuthMessage(friendlyError(error.message), 'error');
+    } finally { setBusy(el.recoverySubmit, false, 'Enviando…', 'Enviar enlace'); }
+  });
+  el.passwordResetForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const password = document.getElementById('resetPassword').value;
+    const confirm = document.getElementById('resetPasswordConfirm').value;
+    if (password.length < 8) return setAuthMessage('La contraseña debe tener al menos 8 caracteres.', 'error');
+    if (password !== confirm) return setAuthMessage('Las contraseñas no coinciden.', 'error');
+    setBusy(el.resetPasswordSubmit, true, 'Guardando…', 'Guardar contraseña nueva');
+    try {
+      await updatePassword(password, activeSession?.access_token);
+      activeSession = null;
+      try { localStorage.removeItem(AUTH_STORAGE_KEY); } catch {}
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      el.passwordResetPanel.hidden = true;
+      el.tabSignup.hidden = false;
+      el.tabLogin.hidden = false;
+      switchAuthMode('login');
+      setAuthMessage('Contraseña actualizada. Ya puedes iniciar sesión con tu nueva contraseña.', 'success');
+    } catch (error) { setAuthMessage(friendlyError(error.message), 'error'); }
+    finally { setBusy(el.resetPasswordSubmit, false, 'Guardando…', 'Guardar contraseña nueva'); }
+  });
+  el.profileEditForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!activeUser || !activeSession) return;
+    const username = document.getElementById('editUsername').value.trim();
+    if (username.length < 2 || username.length > 30) {
+      el.accountSettingsMessage.textContent = 'El nombre debe tener entre 2 y 30 caracteres.';
+      el.accountSettingsMessage.className = 'auth-message error';
+      el.accountSettingsMessage.hidden = false;
+      return;
+    }
+    setBusy(el.saveProfileButton, true, 'Guardando…', 'Guardar nombre');
+    try {
+      await updateUsername(username);
+      el.accountSettingsMessage.textContent = 'Nombre de usuario actualizado.';
+      el.accountSettingsMessage.className = 'auth-message success';
+      el.accountSettingsMessage.hidden = false;
+    } catch (error) {
+      el.accountSettingsMessage.textContent = friendlyError(error.message);
+      el.accountSettingsMessage.className = 'auth-message error';
+      el.accountSettingsMessage.hidden = false;
+    } finally { setBusy(el.saveProfileButton, false, 'Guardando…', 'Guardar nombre'); }
+  });
+  el.changePasswordForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const password = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('newPasswordConfirm').value;
+    if (password.length < 8) {
+      el.accountSettingsMessage.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+      el.accountSettingsMessage.className = 'auth-message error';
+      el.accountSettingsMessage.hidden = false;
+      return;
+    }
+    if (password !== confirm) {
+      el.accountSettingsMessage.textContent = 'Las contraseñas no coinciden.';
+      el.accountSettingsMessage.className = 'auth-message error';
+      el.accountSettingsMessage.hidden = false;
+      return;
+    }
+    setBusy(el.changePasswordButton, true, 'Actualizando…', 'Actualizar contraseña');
+    try {
+      await updatePassword(password);
+      document.getElementById('newPassword').value = '';
+      document.getElementById('newPasswordConfirm').value = '';
+      el.accountSettingsMessage.textContent = 'Contraseña actualizada correctamente.';
+      el.accountSettingsMessage.className = 'auth-message success';
+      el.accountSettingsMessage.hidden = false;
+    } catch (error) {
+      el.accountSettingsMessage.textContent = friendlyError(error.message);
+      el.accountSettingsMessage.className = 'auth-message error';
+      el.accountSettingsMessage.hidden = false;
+    } finally { setBusy(el.changePasswordButton, false, 'Actualizando…', 'Actualizar contraseña'); }
+  });
   el.startButton.addEventListener('click', startMining);
   el.stopButton.addEventListener('click', () => stopMiningAt(Date.now()));
   el.navItems.forEach(item => item.addEventListener('click', () => switchPage(item.dataset.page)));
@@ -659,8 +848,9 @@
 
   // Startup: authentication remains visible until Supabase is configured and a user signs in.
   showAuthGate();
+  const isPasswordRecovery = handleRecoveryRedirect();
   if (CONFIG_OK) el.configNotice.hidden = true;
-  bootstrapAuth().catch(error => {
+  if (!isPasswordRecovery) bootstrapAuth().catch(error => {
     console.error('No se pudo inicializar la autenticación GNG:', error);
     showAuthGate('No se pudo iniciar la conexión con Supabase. Comprueba la configuración y vuelve a cargar la aplicación.', 'error');
   });
