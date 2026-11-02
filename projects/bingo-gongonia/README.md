@@ -32,7 +32,8 @@ La probabilidad de obtener una letra es el número de bolitas restantes de esa l
 
 ## Estado
 - **Etapa 1 — implementación inicial:** motor y pruebas automatizadas añadidos en `engine/`.
-- **Pruebas locales:** 8 de 8 aprobadas.
+- **Pruebas automatizadas locales:** 8 de 8 aprobadas.
+- **Prueba de estrés:** 1.000 partidas completas (75.000 extracciones) verificadas con Web Crypto; cero repeticiones y 15 bolitas por columna en cada partida.
 - **Cloudflare Pages:** proyecto `bingo-gongonia` creado, aún sin despliegue ni conexión Git.
 - **Repositorio GitHub dedicado:** pendiente. Por ahora el código está alojado en este repositorio central, dentro de `projects/bingo-gongonia/`, sin modificar los otros juegos.
 - La persistencia entre recargas/dispositivos y la interfaz gráfica aún no están implementadas.
