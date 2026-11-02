@@ -20,9 +20,9 @@ La probabilidad de obtener una letra es el número de bolitas restantes de esa l
 
 ## Arquitectura
 - Interfaz responsive separada del motor de sorteo.
-- Motor de sorteo puro e independiente, con pruebas automatizadas.
-- Despliegue web en Cloudflare Pages.
-- Repositorio y control de versiones en GitHub.
+- Motor de sorteo JavaScript independiente, con Fisher–Yates y Web Crypto.
+- Pruebas automatizadas con Node.js.
+- Despliegue web previsto en Cloudflare Pages.
 
 ## Etapas
 1. Motor estadístico y control de extracción.
@@ -31,4 +31,8 @@ La probabilidad de obtener una letra es el número de bolitas restantes de esa l
 4. Funciones adicionales y preparación para las tiendas.
 
 ## Estado
-Infraestructura Cloudflare Pages creada. Repositorio GitHub dedicado pendiente de creación por limitación de permisos de la conexión actual. No hay todavía lógica de juego ni interfaz implementadas.
+- **Etapa 1 — implementación inicial:** motor y pruebas automatizadas añadidos en `engine/`.
+- **Pruebas locales:** 8 de 8 aprobadas.
+- **Cloudflare Pages:** proyecto `bingo-gongonia` creado, aún sin despliegue ni conexión Git.
+- **Repositorio GitHub dedicado:** pendiente. Por ahora el código está alojado en este repositorio central, dentro de `projects/bingo-gongonia/`, sin modificar los otros juegos.
+- La persistencia entre recargas/dispositivos y la interfaz gráfica aún no están implementadas.
