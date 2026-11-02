@@ -85,9 +85,99 @@ export class Bingo75Game {
   #drawIndex = 0;
   #status = 'not_started';
 
-  constructor({ randomInt = secureRandomInt } = {}) {
+  #storage;
+  #storageKey;
+
+  constructor({
+    randomInt = secureRandomInt,
+    storage = null,
+    storageKey = 'bingo-de-gongonia-game-v1',
+  } = {}) {
     if (typeof randomInt !== 'function') throw new TypeError('randomInt debe ser una función.');
+    if (storage !== null && (
+      typeof storage.getItem !== 'function' ||
+      typeof storage.setItem !== 'function'
+    )) {
+      throw new TypeError('storage debe implementar getItem() y setItem().');
+    }
+    if (typeof storageKey !== 'string' || storageKey.length === 0) {
+      throw new TypeError('storageKey debe ser una cadena no vacía.');
+    }
+
     this.#randomInt = randomInt;
+    this.#storage = storage;
+    this.#storageKey = storageKey;
+    this.#restoreFromStorage();
+  }
+
+  #persistSnapshot(sequence, drawIndex, status) {
+    if (!this.#storage) return;
+    const snapshot = {
+      version: 1,
+      sequence: sequence.map((ball) => ball.id),
+      drawIndex,
+      status,
+    };
+    // Escribe antes de cambiar el estado en memoria: si falla el guardado,
+    // la extracción no se considera completada.
+    this.#storage.setItem(this.#storageKey, JSON.stringify(snapshot));
+  }
+
+  #restoreFromStorage() {
+    if (!this.#storage) return;
+
+    const raw = this.#storage.getItem(this.#storageKey);
+    if (raw === null) return;
+
+    let snapshot;
+    try {
+      snapshot = JSON.parse(raw);
+    } catch {
+      throw new Error('El estado guardado de Bingo está dañado y no se pudo recuperar.');
+    }
+
+    const canonicalBalls = new Map(createBallSet().map((ball) => [ball.id, ball]));
+    const validStatuses = ['active', 'completed', 'finalized'];
+    const validSequence = snapshot?.version === 1 &&
+      Array.isArray(snapshot.sequence) &&
+      snapshot.sequence.length === TOTAL_BALLS &&
+      snapshot.sequence.every((id) => typeof id === 'string' && canonicalBalls.has(id)) &&
+      new Set(snapshot.sequence).size === TOTAL_BALLS;
+    const validIndex = Number.isInteger(snapshot?.drawIndex) &&
+      snapshot.drawIndex >= 0 && snapshot.drawIndex <= TOTAL_BALLS;
+    const validStatus = validStatuses.includes(snapshot?.status);
+    const statusMatchesIndex = snapshot?.status === 'active'
+      ? snapshot.drawIndex < TOTAL_BALLS
+      : snapshot?.status === 'completed'
+        ? snapshot.drawIndex === TOTAL_BALLS
+        : snapshot?.status === 'finalized' && snapshot.drawIndex < TOTAL_BALLS;
+
+    if (!validSequence || !validIndex || !validStatus || !statusMatchesIndex) {
+      throw new Error('El estado guardado de Bingo no es válido. No se inició una partida nueva para evitar perder datos.');
+    }
+
+    this.#sequence = snapshot.sequence.map((id) => canonicalBalls.get(id));
+    this.#drawIndex = snapshot.drawIndex;
+    this.#status = snapshot.status;
+    this.#history = Array.from(
+      { length: this.#drawIndex },
+      (_, index) => this.#createRecordAt(this.#sequence, index),
+    );
+  }
+
+  #createRecordAt(sequence, index) {
+    const remainingBeforeDraw = TOTAL_BALLS - index;
+    const ball = sequence[index];
+    const countsBeforeDraw = countByColumn(sequence.slice(index));
+
+    return Object.freeze({
+      drawNumber: index + 1,
+      ball,
+      drawnTotal: index + 1,
+      remainingTotal: TOTAL_BALLS - index - 1,
+      probabilityOfThisBall: 1 / remainingBeforeDraw,
+      probabilityOfThisColumn: countsBeforeDraw[ball.letter] / remainingBeforeDraw,
+    });
   }
 
   start() {
@@ -99,7 +189,9 @@ export class Bingo75Game {
   }
 
   #beginNewGame() {
-    this.#sequence = fisherYatesShuffle(createBallSet(), this.#randomInt);
+    const sequence = fisherYatesShuffle(createBallSet(), this.#randomInt);
+    this.#persistSnapshot(sequence, 0, 'active');
+    this.#sequence = sequence;
     this.#history = [];
     this.#drawIndex = 0;
     this.#status = 'active';
@@ -113,22 +205,14 @@ export class Bingo75Game {
         : 'No hay una partida activa. Inicia el bingo primero.');
     }
 
-    const remainingBeforeDraw = TOTAL_BALLS - this.#drawIndex;
-    const ball = this.#sequence[this.#drawIndex];
-    const countsBeforeDraw = countByColumn(this.#sequence.slice(this.#drawIndex));
-    this.#drawIndex += 1;
+    const record = this.#createRecordAt(this.#sequence, this.#drawIndex);
+    const nextIndex = this.#drawIndex + 1;
+    const nextStatus = nextIndex === TOTAL_BALLS ? 'completed' : 'active';
 
-    const record = Object.freeze({
-      drawNumber: this.#drawIndex,
-      ball,
-      drawnTotal: this.#drawIndex,
-      remainingTotal: TOTAL_BALLS - this.#drawIndex,
-      probabilityOfThisBall: 1 / remainingBeforeDraw,
-      probabilityOfThisColumn: countsBeforeDraw[ball.letter] / remainingBeforeDraw,
-    });
+    this.#persistSnapshot(this.#sequence, nextIndex, nextStatus);
+    this.#drawIndex = nextIndex;
+    this.#status = nextStatus;
     this.#history.push(record);
-
-    if (this.#drawIndex === TOTAL_BALLS) this.#status = 'completed';
 
     return {
       ...record,
@@ -174,7 +258,10 @@ export class Bingo75Game {
     if (this.#status !== 'active' && this.#status !== 'completed' && this.#status !== 'finalized') {
       throw new Error('No hay una partida iniciada para finalizar.');
     }
-    if (this.#status === 'active') this.#status = 'finalized';
+    if (this.#status === 'active') {
+      this.#persistSnapshot(this.#sequence, this.#drawIndex, 'finalized');
+      this.#status = 'finalized';
+    }
     return {
       completed: this.#drawIndex === TOTAL_BALLS,
       status: this.#status,
