@@ -133,3 +133,76 @@ test('finalizar antes de completar no extrae bolitas automáticamente', () => {
   assert.equal(game.getState().status, 'finalized');
   assert.throws(() => game.drawNext(), /No hay una partida activa/);
 });
+
+
+class MemoryStorage {
+  #values = new Map();
+
+  getItem(key) {
+    return this.#values.has(key) ? this.#values.get(key) : null;
+  }
+
+  setItem(key, value) {
+    this.#values.set(key, String(value));
+  }
+}
+
+test('la partida y la secuencia exacta se recuperan después de recrear el motor', () => {
+  const storage = new MemoryStorage();
+  const seed = 41;
+
+  const uninterrupted = new Bingo75Game({ randomInt: cyclingRandomInt(seed) });
+  uninterrupted.start();
+  const expectedFirst = uninterrupted.drawNext().ball.id;
+  const expectedSecond = uninterrupted.drawNext().ball.id;
+  const expectedThird = uninterrupted.drawNext().ball.id;
+
+  const interrupted = new Bingo75Game({ randomInt: cyclingRandomInt(seed), storage });
+  interrupted.start();
+  assert.equal(interrupted.drawNext().ball.id, expectedFirst);
+  assert.equal(interrupted.drawNext().ball.id, expectedSecond);
+
+  // La instancia nueva no debe necesitar generar otra secuencia.
+  const restored = new Bingo75Game({
+    storage,
+    randomInt: () => {
+      throw new Error('No debe mezclarse una nueva secuencia al recuperar una partida.');
+    },
+  });
+
+  assert.equal(restored.getState().drawnTotal, 2);
+  assert.equal(restored.getState().remainingTotal, 73);
+  assert.deepEqual(
+    restored.getHistory().map((record) => record.ball.id),
+    [expectedFirst, expectedSecond],
+  );
+  assert.equal(restored.drawNext().ball.id, expectedThird);
+});
+
+test('un reinicio confirmado reemplaza también la partida guardada', () => {
+  const storage = new MemoryStorage();
+  const game = new Bingo75Game({ randomInt: cyclingRandomInt(19), storage });
+  game.start();
+  game.drawNext();
+  assert.equal(game.getState().drawnTotal, 1);
+
+  const response = game.reset();
+  assert.equal(response.confirmationRequired, true);
+  assert.equal(game.getState().drawnTotal, 1);
+
+  game.reset({ confirmed: true });
+  const restored = new Bingo75Game({ storage });
+  assert.equal(restored.getState().drawnTotal, 0);
+  assert.equal(restored.getState().remainingTotal, 75);
+  assert.equal(restored.getHistory().length, 0);
+});
+
+test('un estado guardado dañado no se reemplaza silenciosamente por una partida nueva', () => {
+  const storage = new MemoryStorage();
+  storage.setItem('bingo-de-gongonia-game-v1', '{json dañado');
+
+  assert.throws(
+    () => new Bingo75Game({ storage }),
+    /estado guardado de Bingo está dañado/,
+  );
+});
