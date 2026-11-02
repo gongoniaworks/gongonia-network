@@ -1,13 +1,15 @@
-name: Bingo de Gongonia — Engine tests
+name: Bingo de Gongonia — project checks
 
 on:
   push:
     paths:
       - "projects/bingo-gongonia/engine/**"
+      - "projects/bingo-gongonia/app/**"
       - ".github/workflows/bingo-engine-tests.yml"
   pull_request:
     paths:
       - "projects/bingo-gongonia/engine/**"
+      - "projects/bingo-gongonia/app/**"
       - ".github/workflows/bingo-engine-tests.yml"
   workflow_dispatch:
 
@@ -24,3 +26,5 @@ jobs:
       - name: Run engine tests
         working-directory: projects/bingo-gongonia/engine
         run: npm test
+      - name: Check app JavaScript module syntax
+        run: node --check --input-type=module < projects/bingo-gongonia/app/src/main.js
