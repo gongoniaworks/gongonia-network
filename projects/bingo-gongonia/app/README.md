@@ -22,7 +22,7 @@ Desde esta carpeta:
 npm run build
 ```
 
-El proceso crea `dist/` con la interfaz y una copia de publicación del motor. No mantiene una segunda versión manual del motor: siempre copia el archivo de `../engine/src/bingo-engine.js`. También ajusta la ruta de importación para el paquete publicado.
+El proceso crea `dist/` con la interfaz y una copia de publicación del motor. No mantiene una segunda versión manual del motor: siempre copia el archivo de `../engine/src/bingo-engine.js`. También ajusta la ruta de importación para el paquete publicado e incorpora las cabeceras de seguridad de `_headers`.
 
 ## Funciones de esta etapa
 
