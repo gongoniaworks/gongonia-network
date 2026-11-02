@@ -1,0 +1,26 @@
+name: Bingo de Gongonia — Engine tests
+
+on:
+  push:
+    paths:
+      - "projects/bingo-gongonia/engine/**"
+      - ".github/workflows/bingo-engine-tests.yml"
+  pull_request:
+    paths:
+      - "projects/bingo-gongonia/engine/**"
+      - ".github/workflows/bingo-engine-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run engine tests
+        working-directory: projects/bingo-gongonia/engine
+        run: npm test
