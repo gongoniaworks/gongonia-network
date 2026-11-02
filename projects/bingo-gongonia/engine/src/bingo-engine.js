@@ -140,10 +140,6 @@ export class Bingo75Game {
     return this.#history.map((record) => ({ ...record, ball: { ...record.ball } }));
   }
 
-  getRemainingBalls() {
-    return this.#sequence.slice(this.#drawIndex).map((ball) => ({ ...ball }));
-  }
-
   getState() {
     const remainingBalls = this.#sequence.slice(this.#drawIndex);
     const remainingByColumn = countByColumn(remainingBalls);
