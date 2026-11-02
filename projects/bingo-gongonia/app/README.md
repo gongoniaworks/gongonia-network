@@ -22,7 +22,7 @@ Desde esta carpeta:
 npm run build
 ```
 
-El proceso crea `dist/` con la interfaz y una copia de publicación del motor. Cloudflare Pages está conectado a este repositorio y usa esta compilación para producción. Como el código todavía vive en un repositorio compartido, por ahora cualquier push a `main` puede volver a ejecutar el despliegue. No mantiene una segunda versión manual del motor: siempre copia el archivo de `../engine/src/bingo-engine.js`. También ajusta la ruta de importación para el paquete publicado e incorpora las cabeceras de seguridad de `_headers`.
+El proceso crea `dist/` con la interfaz y una copia de publicación del motor. Cloudflare Pages está conectado a este repositorio y usa esta compilación para producción. El despliegue de `main` está limitado a los archivos de interfaz y motor configurados para Bingo de Gongonia. No mantiene una segunda versión manual del motor: siempre copia el archivo de `../engine/src/bingo-engine.js`. También ajusta la ruta de importación para el paquete publicado e incorpora las cabeceras de seguridad de `_headers`.
 
 ## Funciones de esta etapa
 
