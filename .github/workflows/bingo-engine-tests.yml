@@ -26,5 +26,12 @@ jobs:
       - name: Run engine tests
         working-directory: projects/bingo-gongonia/engine
         run: npm test
+      - name: Build static app bundle
+        working-directory: projects/bingo-gongonia/app
+        run: npm run build
       - name: Check app JavaScript module syntax
-        run: node --check --input-type=module < projects/bingo-gongonia/app/src/main.js
+        working-directory: projects/bingo-gongonia/app
+        run: npm run check
+      - name: Check deployed module JavaScript syntax
+        working-directory: projects/bingo-gongonia/app
+        run: node --check dist/src/main.js
