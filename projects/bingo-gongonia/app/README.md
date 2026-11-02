@@ -1,10 +1,10 @@
 # Bingo de Gongonia — Interfaz (Etapa 2)
 
-Interfaz web responsive del sorteo, conectada directamente con el motor de `../engine/src/bingo-engine.js`.
+Interfaz web responsive del sorteo, conectada con el motor de `../engine/src/bingo-engine.js`.
 
 ## Abrir en local
 
-Sirve la carpeta `app/` desde un servidor HTTP estático. Por ejemplo, desde la raíz del repositorio:
+Desde la raíz del repositorio, inicia un servidor HTTP estático:
 
 ```bash
 python -m http.server 8000
@@ -13,6 +13,16 @@ python -m http.server 8000
 Abre `http://localhost:8000/projects/bingo-gongonia/app/`.
 
 No abras `index.html` directamente como archivo: los módulos JavaScript necesitan un servidor HTTP.
+
+## Compilar para publicación
+
+Desde esta carpeta:
+
+```bash
+npm run build
+```
+
+El proceso crea `dist/` con la interfaz y una copia de publicación del motor. No mantiene una segunda versión manual del motor: siempre copia el archivo de `../engine/src/bingo-engine.js`. También ajusta la ruta de importación para el paquete publicado.
 
 ## Funciones de esta etapa
 
