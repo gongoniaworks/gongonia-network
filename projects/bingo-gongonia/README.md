@@ -5,7 +5,7 @@ Proyecto de videojuego de bingo de 75 bolitas, perteneciente a Gongonia.
 ## Objetivo
 Construir una aplicación web responsive, preparada para PWA y futura publicación en Google Play y Apple App Store.
 
-## Alcance — Etapa 1
+## Alcance — Etapa 1: motor de sorteo
 - 75 bolitas: B (1–15), I (16–30), N (31–45), G (46–60), O (61–75).
 - Secuencia aleatoria uniforme sin reemplazo.
 - Una sola bolita por solicitud.
@@ -20,8 +20,8 @@ La probabilidad de obtener una letra es el número de bolitas restantes de esa l
 
 ## Arquitectura
 - Interfaz responsive separada del motor de sorteo.
-- Motor de sorteo JavaScript independiente, con Fisher–Yates y Web Crypto.
-- Pruebas automatizadas con Node.js.
+- Motor JavaScript independiente, con Fisher–Yates y Web Crypto.
+- Pruebas automatizadas con Node.js y GitHub Actions.
 - Despliegue web previsto en Cloudflare Pages.
 
 ## Etapas
@@ -30,11 +30,21 @@ La probabilidad de obtener una letra es el número de bolitas restantes de esa l
 3. Animaciones, sonidos y experiencia móvil.
 4. Funciones adicionales y preparación para las tiendas.
 
-## Estado
-- **Etapa 1 — implementación inicial:** motor y pruebas automatizadas añadidos en `engine/`.
-- **Pruebas automatizadas en GitHub Actions:** 11 de 11 aprobadas.
-- **Prueba de estrés:** 1.000 partidas completas (75.000 extracciones) verificadas con Web Crypto; cero repeticiones y 15 bolitas por columna en cada partida.
-- **Cloudflare Pages:** proyecto `bingo-gongonia` creado, aún sin despliegue ni conexión Git.
-- **Repositorio GitHub dedicado:** pendiente. Por ahora el código está alojado en este repositorio central, dentro de `projects/bingo-gongonia/`, sin modificar los otros juegos.
-- **Persistencia local:** guardado y recuperación automáticos con `localStorage`, en el mismo navegador y dispositivo.
-- La sincronización entre dispositivos y la interfaz gráfica aún no están implementadas.
+## Estado del proyecto
+- **Etapa 1 — implementada:** motor de sorteo, historial, estado, probabilidades, reinicio confirmado y persistencia local.
+- **Etapa 1 — pruebas:** 11 de 11 pruebas automatizadas aprobadas en GitHub Actions.
+- **Etapa 2 — interfaz funcional implementada:** aplicación web responsive en `app/`, conectada al motor de `engine/`.
+- La interfaz muestra la bolita extraída, contadores, progreso, probabilidad de una bolita específica, probabilidades por columna e historial cronológico.
+- Cada pulsación extrae una sola bolita. No hay extracciones automáticas.
+- **Persistencia local:** la partida se recupera en el mismo navegador y dispositivo. No hay sincronización entre dispositivos.
+- **Cloudflare Pages:** el proyecto `bingo-gongonia` está creado; la publicación y la conexión Git siguen pendientes.
+- **Repositorio GitHub dedicado:** pendiente. El código se aloja en este repositorio central, dentro de `projects/bingo-gongonia/`, sin modificar los otros juegos.
+
+## Ubicación del código
+- Motor: `engine/src/bingo-engine.js`
+- Pruebas del motor: `engine/test/bingo-engine.test.js`
+- Interfaz: `app/index.html`, `app/styles.css` y `app/src/main.js`
+- Instrucciones de ejecución local: `app/README.md`
+
+## Fuera del alcance actual
+Cartones, participantes, apuestas, dinero, premios, validación de ganadores y sincronización entre dispositivos. Las animaciones y los sonidos corresponden a la etapa 3.
