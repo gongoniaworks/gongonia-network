@@ -33,11 +33,11 @@ La probabilidad de obtener una letra es el número de bolitas restantes de esa l
 ## Estado del proyecto
 - **Etapa 1 — implementada:** motor de sorteo, historial, estado, probabilidades, reinicio confirmado y persistencia local.
 - **Etapa 1 — pruebas:** 11 de 11 pruebas automatizadas aprobadas en GitHub Actions.
-- **Etapa 2 — interfaz funcional implementada:** aplicación web responsive en `app/`, conectada al motor de `engine/`.
+- **Etapa 2 — interfaz funcional implementada y publicada:** aplicación web responsive en `app/`, conectada al motor de `engine/` y disponible en Cloudflare Pages.
 - La interfaz muestra la bolita extraída, contadores, progreso, probabilidad de una bolita específica, probabilidades por columna e historial cronológico.
 - Cada pulsación extrae una sola bolita. No hay extracciones automáticas.
 - **Persistencia local:** la partida se recupera en el mismo navegador y dispositivo. No hay sincronización entre dispositivos.
-- **Cloudflare Pages:** el proyecto `bingo-gongonia` está creado; la publicación y la conexión Git siguen pendientes.
+- **Cloudflare Pages:** app publicada en https://bingo-gongonia.pages.dev, conectada a GitHub con despliegue automático desde `main` para los archivos configurados de Bingo.
 - **Repositorio GitHub dedicado:** pendiente. El código se aloja en este repositorio central, dentro de `projects/bingo-gongonia/`, sin modificar los otros juegos.
 
 ## Ubicación del código
