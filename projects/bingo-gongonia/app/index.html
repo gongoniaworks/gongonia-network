@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b2b">
+  <meta name="description" content="Bingo de Gongonia: sorteo aleatorio de 75 bolitas, una extracción a la vez.">
+  <title>Bingo de Gongonia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/main.js"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Bingo de Gongonia, inicio">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span class="brand-copy"><strong>GONGONIA</strong><small>JUEGOS DE MESA</small></span>
+      </a>
+      <span class="edition">BINGO CLÁSICO · 75 BOLITAS</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">EL SORTEO COMIENZA AQUÍ</p>
+        <h1>Bingo de <em>Gongonia</em></h1>
+        <p class="intro-copy">Una bolita a la vez. Una secuencia aleatoria, sin repeticiones.</p>
+      </section>
+
+      <section class="game-layout" aria-label="Panel del sorteo">
+        <div class="draw-panel panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">BOLITA EXTRAÍDA</p>
+              <h2 id="game-status">Preparando sorteo</h2>
+            </div>
+            <span class="live-indicator" id="live-indicator"><span></span> EN ESPERA</span>
+          </div>
+
+          <div class="ball-stage" aria-live="polite" aria-atomic="true" id="ball-stage">
+            <div class="ball-placeholder">
+              <span class="placeholder-star">✦</span>
+              <strong>LISTOS</strong>
+              <small>La primera bolita espera tu señal</small>
+            </div>
+          </div>
+
+          <div class="draw-counter">
+            <div><strong id="drawn-count">0</strong><span>EXTRAÍDAS</span></div>
+            <div class="counter-divider"></div>
+            <div><strong id="remaining-count">75</strong><span>RESTANTES</span></div>
+          </div>
+
+          <div class="progress-track" aria-label="Progreso del sorteo">
+            <div id="progress-fill"></div>
+          </div>
+
+          <div class="primary-actions">
+            <button class="button button-primary" id="draw-button" type="button">
+              <span class="button-icon" aria-hidden="true">✦</span>
+              <span id="draw-button-label">Sacar siguiente bolita</span>
+            </button>
+            <button class="button button-secondary" id="finish-button" type="button">Finalizar sorteo</button>
+          </div>
+          <p class="action-note" id="action-note">Cada pulsación extrae exactamente una bolita.</p>
+          <div class="notice" id="notice" role="status" hidden></div>
+        </div>
+
+        <aside class="stats-panel panel">
+          <div class="panel-heading compact-heading">
+            <div>
+              <p class="eyebrow">PROBABILIDAD EN TIEMPO REAL</p>
+              <h2>Las columnas</h2>
+            </div>
+          </div>
+          <div class="next-probability">
+            <span class="probability-label">Probabilidad de una bolita específica restante</span>
+            <strong id="ball-probability">1 / 75</strong>
+            <small id="ball-probability-percent">1,33 % por bolita</small>
+          </div>
+          <div class="column-list" id="column-list">
+            <div class="column-row"><span class="column-letter letter-b">B</span><div class="column-info"><strong>15 restantes</strong><small>20,00 % del total</small></div><span class="column-bar"><i style="width:100%"></i></span></div>
+            <div class="column-row"><span class="column-letter letter-i">I</span><div class="column-info"><strong>15 restantes</strong><small>20,00 % del total</small></div><span class="column-bar"><i style="width:100%"></i></span></div>
+            <div class="column-row"><span class="column-letter letter-n">N</span><div class="column-info"><strong>15 restantes</strong><small>20,00 % del total</small></div><span class="column-bar"><i style="width:100%"></i></span></div>
+            <div class="column-row"><span class="column-letter letter-g">G</span><div class="column-info"><strong>15 restantes</strong><small>20,00 % del total</small></div><span class="column-bar"><i style="width:100%"></i></span></div>
+            <div class="column-row"><span class="column-letter letter-o">O</span><div class="column-info"><strong>15 restantes</strong><small>20,00 % del total</small></div><span class="column-bar"><i style="width:100%"></i></span></div>
+          </div>
+          <p class="stats-footnote">La probabilidad de cada letra se calcula con las bolitas que aún quedan en esa columna.</p>
+        </aside>
+      </section>
+
+      <section class="history-panel panel">
+        <div class="panel-heading history-heading">
+          <div>
+            <p class="eyebrow">REGISTRO DE LA PARTIDA</p>
+            <h2>Historial de extracción</h2>
+          </div>
+          <span class="history-total" id="history-total">0 / 75</span>
+        </div>
+        <div class="history-table-wrap">
+          <table>
+            <thead>
+              <tr><th>N.º</th><th>Bolita</th><th>Extraídas</th><th>Restantes</th><th>Prob. de esa bolita</th></tr>
+            </thead>
+            <tbody id="history-body">
+              <tr class="empty-row"><td colspan="5">Todavía no se ha extraído ninguna bolita.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="history-caption">El historial se conserva en este navegador y dispositivo.</p>
+      </section>
+
+      <section class="bottom-actions" aria-label="Acciones de la partida">
+        <p id="game-summary">La partida se guarda automáticamente mientras juegas.</p>
+        <button class="button button-quiet" id="restart-button" type="button">↻ Nueva partida</button>
+      </section>
+
+      <section class="error-panel panel" id="error-panel" role="alert" hidden>
+        <p class="eyebrow">NO SE PUDO ABRIR EL SORTEO</p>
+        <h2>Hay un problema con la partida guardada</h2>
+        <p id="error-message"></p>
+        <p>No se ha creado otra secuencia ni se han eliminado los datos guardados.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>GONGONIA WORKS</span>
+      <span>AZAR JUSTO · SIN REEMPLAZO · 75 BOLITAS</span>
+    </footer>
+  </div>
+</body>
+</html>
