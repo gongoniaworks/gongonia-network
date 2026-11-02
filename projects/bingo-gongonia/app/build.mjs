@@ -12,6 +12,7 @@ await mkdir(path.join(outputDirectory, 'engine', 'src'), { recursive: true });
 
 await copyFile(path.join(appDirectory, 'index.html'), path.join(outputDirectory, 'index.html'));
 await copyFile(path.join(appDirectory, 'styles.css'), path.join(outputDirectory, 'styles.css'));
+await copyFile(path.join(appDirectory, '_headers'), path.join(outputDirectory, '_headers'));
 
 const sourceMain = await readFile(path.join(appDirectory, 'src', 'main.js'), 'utf8');
 const sourceImport = '../../engine/src/bingo-engine.js';
